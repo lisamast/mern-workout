@@ -6,7 +6,7 @@ export const getAllWorkouts = async (req, res) => {
   try {
     // 1. Haal alle workouts op
     // 2. Sorteer: nieuwste eerst
-    const workouts = await Workout.find({}).sort({ createdAt: -1 });
+    const workouts = await Workout.find({userId: req.user._id}).sort({ createdAt: -1 });
     
     // 3. Stuur terug
     res.status(200).json(workouts);
@@ -49,7 +49,7 @@ export const createWorkout = async (req, res) => {
 
   try {
     // 2. Maak workout in database
-    const workout = await Workout.create({ title, reps, load });
+    const workout = await Workout.create({ title, reps, load, userId: req.user._id });
     
     // 3. Stuur terug
     res.status(201).json(workout);
@@ -69,8 +69,8 @@ export const updateWorkout = async (req, res) => {
   }
 
   try {
-    const workout = await Workout.findByIdAndUpdate(
-      id, 
+    const workout = await Workout.findByOneAndUpdate(
+      { _id: id, userId: req.user._id }, 
       { ...req.body },
       { new: true }
     );
@@ -95,7 +95,10 @@ export const deleteWorkout = async (req, res) => {
   }
 
   try {
-    const workout = await Workout.findByIdAndDelete(id);
+    const workout = await Workout.findOneAndDelete({ 
+      _id: id, 
+      userId: req.user._id
+    });
 
     if (!workout) {
       return res.status(404).json({ error: 'Workout niet gevonden' });

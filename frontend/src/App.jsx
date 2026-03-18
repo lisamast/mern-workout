@@ -1,5 +1,6 @@
-import { useEffect, useState, fetchWorkouts } from 'react';
+import { useEffect, useState } from 'react';
 import Login from './components/Login';
+import Register from './components/Register';
 import WorkoutForm from './components/WorkoutForm';
 import WorkoutList from './components/WorkoutList';
 
@@ -13,34 +14,32 @@ function App() {
     console.log('Uitgelogd');
   };
 
-  useEffect(() => {
-    const fetchWorkouts = async () => {
+  const fetchWorkouts = async () => {
+    if (!token) {
+      console.log('Niet ingelogd');
+      return;
+    }
 
-
-      if (!token) {
-        console.log('Niet ingelogd');
-        return;
-      }
-
-      try {
-        const response = await fetch('http://localhost:4000/api/workouts', {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          setWorkouts(data);
-        } else {
-          console.error(data.error);
+    try {
+      const response = await fetch('http://localhost:4000/api/workouts', {
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
-      } catch (error) {
-        console.error('Error:', error);
-      }
-    };
+      });
 
+      const data = await response.json();
+
+      if (response.ok) {
+        setWorkouts(data);
+      } else {
+        console.error(data.error);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  useEffect(() => {
     fetchWorkouts();
   }, [token]);
 
@@ -49,7 +48,10 @@ function App() {
       <h1>Workouts</h1>
 
       {!token ? (
-        <Login setToken={setToken} />
+        <>
+          <Login setToken={setToken} />
+          <Register setToken={setToken} />
+        </>
       ) : (
         <>
           <WorkoutForm refreshWorkouts={fetchWorkouts} />

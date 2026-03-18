@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-function WorkoutForm() {
+function WorkoutForm({ refreshWorkouts }) {
     const [title, setTitle] = useState('');
     const [reps, setReps] = useState('');
     const [load, setLoad] = useState('');

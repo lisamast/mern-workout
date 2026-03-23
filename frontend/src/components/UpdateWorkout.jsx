@@ -1,12 +1,14 @@
 import { useState } from 'react';
 
-function UpdateWorkout({ workoutId, currentTitle, currentReps, currentLoad }) {
+function UpdateWorkout({ workoutId, currentTitle, currentReps, currentLoad, refreshWorkouts }) {
   const [title, setTitle] = useState(currentTitle);
   const [reps, setReps] = useState(currentReps);
   const [load, setLoad] = useState(currentLoad);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+
+    const token = localStorage.getItem('token');
 
     const updatedWorkout = { 
       title, 
@@ -18,7 +20,8 @@ function UpdateWorkout({ workoutId, currentTitle, currentReps, currentLoad }) {
       const response = await fetch(`http://localhost:4000/api/workouts/${workoutId}`, {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(updatedWorkout)
       });
@@ -27,6 +30,7 @@ function UpdateWorkout({ workoutId, currentTitle, currentReps, currentLoad }) {
 
       if (response.ok) {
         console.log('Workout aangepast!', data);
+        refreshWorkouts();
       } else {
         console.error('Error:', data.error);
       }

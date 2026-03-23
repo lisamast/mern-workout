@@ -69,7 +69,7 @@ export const updateWorkout = async (req, res) => {
   }
 
   try {
-    const workout = await Workout.findByOneAndUpdate(
+    const workout = await Workout.findOneAndUpdate(
       { _id: id, userId: req.user._id }, 
       { ...req.body },
       { new: true }

@@ -1,4 +1,4 @@
-function DeleteWorkout({ workoutId, workoutTitle }) {
+function DeleteWorkout({ workoutId, workoutTitle, refreshWorkouts }) {
   
   const handleDelete = async () => {
     // Bevestiging vragen
@@ -6,15 +6,21 @@ function DeleteWorkout({ workoutId, workoutTitle }) {
       return;
     }
 
+    const token = localStorage.getItem('token');
+
     try {
       const response = await fetch(`http://localhost:4000/api/workouts/${workoutId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: {
+        'Authorization': `Bearer ${token}`
+      }
       });
 
       const data = await response.json();
 
       if (response.ok) {
         console.log('Workout verwijderd!', data);
+        refreshWorkouts();
         // Verwijder uit UI of refresh lijst
       } else {
         console.error('Error:', data.error);
